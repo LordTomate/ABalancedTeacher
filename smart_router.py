@@ -15,10 +15,16 @@ Requires Ollama running locally with all models available.
 """
 
 import json
+import math
 import re
 import requests
 
 OLLAMA_BASE_URL = "http://localhost:11434"
+
+# Temperature distribution: Gaussian around 0.7
+# This makes 0.7 most likely, with values tapering off toward extremes
+TEMP_MEAN = 0.7
+TEMP_SIGMA = 0.15  # Standard deviation - smaller = tighter around mean
 
 # =============================================================================
 # MODEL CONFIGURATION
@@ -93,10 +99,43 @@ def generate_simple(
     return response.json().get("response", "")
 
 
+def apply_gaussian_temperature(base_temp: float) -> float:
+    """
+    Transform temperature using Gaussian distribution around 0.7.
+
+    This makes 0.7 the most likely value (peak of Gaussian), with
+    temperatures tapering off toward extremes (0.0 or 1.0).
+
+    The Gaussian is applied as a weight: values closer to 0.7 have higher
+    probability of staying, while extreme values are "pulled" toward 0.7.
+
+    Args:
+        base_temp: Temperature suggested by the router (0.0-1.0)
+
+    Returns:
+        Adjusted temperature that prefers to be near 0.7
+    """
+    # Calculate how far this temperature is from the mean
+    distance_from_mean = abs(base_temp - TEMP_MEAN)
+
+    # Apply Gaussian weighting: exp(-distance²/(2*sigma²))
+    # This creates a bell curve centered at TEMP_MEAN
+    gaussian_weight = math.exp(-(distance_from_mean**2) / (2 * TEMP_SIGMA**2))
+
+    # Blend the base temperature with the mean based on Gaussian weight
+    # Higher weight = stay closer to base_temp
+    # Lower weight = move toward mean (0.7)
+    adjusted_temp = base_temp * gaussian_weight + TEMP_MEAN * (1 - gaussian_weight)
+
+    # Clamp to valid range
+    return max(0.0, min(1.0, adjusted_temp))
+
+
 def classify_with_ai(user_prompt: str) -> dict:
     """
     Use the small router model to classify the query.
     Returns dict with 'difficulty', 'temperature', and 'reason'.
+    Temperature is adjusted to follow Gaussian distribution around 0.7.
     """
     try:
         result = generate_simple(
@@ -116,8 +155,11 @@ def classify_with_ai(user_prompt: str) -> dict:
             if difficulty not in ["fast", "normal", "strong"]:
                 difficulty = "normal"
 
-            temperature = float(parsed.get("temperature", 0.7))
-            temperature = max(0.0, min(1.0, temperature))  # Clamp to 0-1
+            base_temperature = float(parsed.get("temperature", 0.7))
+            base_temperature = max(0.0, min(1.0, base_temperature))  # Clamp to 0-1
+
+            # Apply Gaussian distribution to prefer 0.7
+            temperature = apply_gaussian_temperature(base_temperature)
 
             reason = parsed.get("reason", "AI classification")
 
