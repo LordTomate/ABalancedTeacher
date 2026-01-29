@@ -200,23 +200,7 @@ def clear_all():
 
 
 # Build the Gradio interface
-with gr.Blocks(
-    title="ABalancedTeacher",
-    theme=gr.themes.Soft(primary_hue="blue"),
-    css="""
-    .tier-info {
-        padding: 10px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        margin-bottom: 10px;
-    }
-    .header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    """,
-) as demo:
+with gr.Blocks(title="ABalancedTeacher") as demo:
     gr.Markdown(
         """
         # 🎓 ABalancedTeacher
@@ -236,7 +220,6 @@ with gr.Blocks(
             chatbot = gr.Chatbot(
                 label="Conversation",
                 height=500,
-                show_copy_button=True,
                 avatar_images=(
                     None,
                     "https://em-content.zobj.net/source/apple/391/owl_1f989.png",
@@ -334,4 +317,18 @@ if __name__ == "__main__":
         server_name="0.0.0.0",
         server_port=7860,
         share=False,
+        theme=gr.themes.Soft(primary_hue="blue"),
+        css="""
+        .tier-info {
+            padding: 10px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 10px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        """,
     )
