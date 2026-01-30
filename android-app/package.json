@@ -1,0 +1,43 @@
+{
+    "name": "ABalancedTeacher",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "android": "react-native run-android",
+        "start": "react-native start",
+        "test": "jest",
+        "lint": "eslint ."
+    },
+    "dependencies": {
+        "react": "18.2.0",
+        "react-native": "0.74.3",
+        "@react-navigation/native": "^6.1.17",
+        "@react-navigation/native-stack": "^6.9.26",
+        "@react-navigation/bottom-tabs": "^6.5.20",
+        "react-native-screens": "^3.31.1",
+        "react-native-safe-area-context": "^4.10.4",
+        "react-native-vector-icons": "^10.1.0",
+        "@react-native-async-storage/async-storage": "^1.23.1",
+        "react-native-markdown-display": "^7.0.2"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.24.7",
+        "@babel/preset-env": "^7.24.7",
+        "@babel/runtime": "^7.24.7",
+        "@react-native/babel-preset": "0.74.85",
+        "@react-native/eslint-config": "0.74.85",
+        "@react-native/metro-config": "0.74.85",
+        "@react-native/typescript-config": "0.74.85",
+        "@types/react": "^18.2.79",
+        "@types/react-test-renderer": "^18.0.7",
+        "babel-jest": "^29.7.0",
+        "eslint": "^8.57.0",
+        "jest": "^29.7.0",
+        "prettier": "3.3.2",
+        "react-test-renderer": "18.2.0",
+        "typescript": "5.4.5"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}
